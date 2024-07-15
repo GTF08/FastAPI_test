@@ -1,6 +1,5 @@
 import json
 import boto3
-import pytest
 
 cred = json.loads('{"url":"http://localhost:9001/api/v1/service-account-credentials","accessKey":"uYG5QTPcGRtF1B808zyO","secretKey":"mxTDfKReDtOtCbLIRXutjsH2EfsP9mq2j356eDf4","api":"s3v4","path":"auto"}')
 api_url = 'http://localhost:9000'
@@ -18,7 +17,7 @@ s3 = boto3.client(
 
 response = s3.list_buckets()
 buckets = [bucket['Name'] for bucket in response['Buckets']]
-if not BUCKET in buckets:
+if BUCKET not in buckets:
     s3.create_bucket(Bucket=BUCKET)
 
 def override_get_s3_client():

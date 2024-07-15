@@ -6794,3 +6794,4 @@ __pycache__/testdatabase.cpython-312.pyc
 .venv/Scripts/uvicorn.exe
 .venv/Scripts/watchfiles.exe
 .venv/Scripts/__pycache__/jp.cpython-312.pyc
+**/__pycache__/

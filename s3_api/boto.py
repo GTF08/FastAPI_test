@@ -1,9 +1,6 @@
-import boto3
-import json
 import io
 import pathlib
 import uuid
-import mimetypes
 
 def generate_name(file):
     ext = pathlib.Path(file.filename).suffix

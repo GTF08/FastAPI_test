@@ -1,17 +1,16 @@
-from fastapi import Depends, FastAPI, Query, Request
-from fastapi.exceptions import HTTPException
+from fastapi import Depends, FastAPI, Query
 from fastapi_pagination import Page, add_pagination, LimitOffsetPage
 from fastapi_pagination.ext.sqlalchemy import paginate
-from starlette.responses import Response, JSONResponse
-from models import Meme
-from models_pydantic import MemePydantic, Meme_Imagebytes
+from starlette.responses import Response
+from models.sqlachemy.models import Meme
+from models.pydantic.models_pydantic import MemePydantic, Meme_Imagebytes
 from sqlalchemy.orm import Session
 from extensions import get_db, init, get_s3_client, get_bucket
 from sqlalchemy import select
 from typing import Annotated
-from fastapi import FastAPI, File, UploadFile, Form
+from fastapi import UploadFile, Form
 
-from boto import upload_file, update_file, delete_file, get_file
+from s3_api.boto import upload_file, update_file, delete_file, get_file
 
 app = FastAPI()
 init()

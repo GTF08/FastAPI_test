@@ -1,5 +1,4 @@
 from testboto import s3, BUCKET
-import pytest
 
 #@pytest.fixture(scope="session", autouse=True)
 def pytest_sessionfinish(session, exitstatus):

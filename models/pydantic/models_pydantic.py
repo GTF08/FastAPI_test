@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from pydantic import PlainValidator, PlainSerializer, BaseModel, errors, WithJsonSchema
+from pydantic import PlainValidator, PlainSerializer, errors, WithJsonSchema
 from typing_extensions import Annotated, Any
 
 def hex_bytes_validator(o: Any) -> bytes:

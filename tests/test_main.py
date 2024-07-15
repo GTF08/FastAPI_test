@@ -12,7 +12,7 @@ app.dependency_overrides[get_db] = override_get_db
 app.dependency_overrides[get_s3_client] = override_get_s3_client
 app.dependency_overrides[get_bucket] = override_get_bucket
 
-testimagename = 'testmeme.png'
+testimagename = 'tests/testmeme.png'
 
 test_db = []
 

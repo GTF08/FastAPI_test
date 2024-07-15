@@ -1,6 +1,8 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm import sessionmaker
+import json
+import boto3
 
 SQLALCHEMY_DATABASE_URL = "sqlite:///./sql_app.db"
 # SQLALCHEMY_DATABASE_URL = "postgresql://user:password@postgresserver/db"
@@ -17,13 +19,7 @@ def get_db():
     try:
         yield db
     finally:
-        db.close()
-
-def init():
-    Base.metadata.create_all(bind=engine)
-
-import json
-import boto3
+        db.close() 
 
 cred = json.loads('{"url":"http://localhost:9001/api/v1/service-account-credentials","accessKey":"uYG5QTPcGRtF1B808zyO","secretKey":"mxTDfKReDtOtCbLIRXutjsH2EfsP9mq2j356eDf4","api":"s3v4","path":"auto"}')
 api_url = 'http://localhost:9000'
@@ -41,7 +37,7 @@ s3 = boto3.client(
 
 response = s3.list_buckets()
 buckets = [bucket['Name'] for bucket in response['Buckets']]
-if not BUCKET in buckets:
+if BUCKET not in buckets:
     s3.create_bucket(Bucket=BUCKET)
 
 def get_s3_client():

@@ -1,5 +1,5 @@
 from extensions import Base
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
+from sqlalchemy import Column, Integer, String
 
 class Meme(Base):
     __tablename__ = "memes"
