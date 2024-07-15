@@ -3,7 +3,7 @@ from fastapi_pagination import Page, add_pagination, LimitOffsetPage
 from fastapi_pagination.ext.sqlalchemy import paginate
 from starlette.responses import Response
 from models.sqlachemy.models import Meme
-from models.pydantic.models_pydantic import MemePydantic, Meme_Imagebytes
+from models.pydantic.models_pydantic import MemePydantic, Meme_Imagebytes, NotFound, InternalServerError
 from sqlalchemy.orm import Session
 from extensions import get_db, init, get_s3_client, get_bucket
 from sqlalchemy import select
@@ -16,12 +16,18 @@ app = FastAPI()
 init()
 add_pagination(app)
 
-@app.get("/memes", response_model=Page[MemePydantic])
+@app.get("/memes", response_model=Page[MemePydantic], status_code=200)
 @app.get("/memes/limit-offset", response_model=LimitOffsetPage[MemePydantic])
 async def meme_list(db: Session = Depends(get_db)) -> any:
     return paginate(db, select(Meme).order_by(Meme.id))
 
-@app.get("/memes/{id}", response_model = Meme_Imagebytes)
+@app.get("/memes/{id}", 
+         response_model = Meme_Imagebytes, 
+         status_code=200,
+         responses={
+             404 : {"model" : NotFound},
+             500 : {"model" : InternalServerError}
+         })
 async def meme_by_id(id : int , 
                      db : Session = Depends(get_db),
                      s3_client = Depends(get_s3_client),
@@ -38,7 +44,12 @@ async def meme_by_id(id : int ,
         print(e)
         return Response(status_code=500)  
 
-@app.post("/memes", response_class=Response)
+@app.post("/memes", 
+          response_class=Response, 
+          status_code=201,
+          responses={
+              500 : {"model" : InternalServerError}
+          })
 async def meme_add(file: UploadFile,
                    text: Annotated[str, Query(max_length=64), Query(min_length=1), Form()] = "Meme Description",
                    db: Session = Depends(get_db),
@@ -51,12 +62,18 @@ async def meme_add(file: UploadFile,
             db.add(meme)
             db.commit()
             return Response(content='Successfully added meme', status_code=201)
-        return Response(content='Failed to add meme', status_code=400)  
+        return Response(content='Failed to add meme', status_code=500)  
     except Exception as e:
         print(e)
         return Response(status_code=500)  
 
-@app.put("/memes/{id}", response_class=Response)
+@app.put("/memes/{id}", 
+         response_class=Response, 
+         status_code=201,
+         responses={
+             404 : {"model" : NotFound},
+             500 : {"model" : InternalServerError}
+         })
 async def meme_update_by_id(id : int,
                             new_file: UploadFile,
                             text: Annotated[str, Query(max_length=64), Query(min_length=1), Form()] = "Meme Description",
@@ -73,14 +90,20 @@ async def meme_update_by_id(id : int,
                 db.commit()
                 return Response(status_code=201)
             else:
-                return Response(status_code=400)
+                return Response(status_code=500)
         else:
             return Response(status_code=404)
     except Exception as e:
         print(e)
         return Response(status_code=500)  
     
-@app.delete("/memes/{id}", response_class=Response)
+@app.delete("/memes/{id}", 
+            response_class=Response, 
+            status_code=204,
+            responses = {
+                404 : {"model" : NotFound},
+                500 : {"model" : InternalServerError}
+            })
 async def meme_delete_by_id(id : int,
                             db: Session = Depends(get_db),
                             s3_client = Depends(get_s3_client),
@@ -94,7 +117,7 @@ async def meme_delete_by_id(id : int,
                 db.commit()
                 return Response(status_code=204)
             else:
-                return Response(status_code=400)
+                return Response(status_code=500)
         else:
             return Response(status_code=404)
     except Exception as e:

@@ -19,7 +19,10 @@ def get_db():
     try:
         yield db
     finally:
-        db.close() 
+        db.close()
+
+def init():
+    Base.metadata.create_all(bind=engine)
 
 cred = json.loads('{"url":"http://localhost:9001/api/v1/service-account-credentials","accessKey":"uYG5QTPcGRtF1B808zyO","secretKey":"mxTDfKReDtOtCbLIRXutjsH2EfsP9mq2j356eDf4","api":"s3v4","path":"auto"}')
 api_url = 'http://localhost:9000'
