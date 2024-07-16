@@ -12,13 +12,19 @@ from fastapi import UploadFile, Form
 
 from s3_api.boto import upload_file, update_file, delete_file, get_file
 
-app = FastAPI()
+from swaggerMeta import swaggerMetadataDict
+app = FastAPI(**swaggerMetadataDict)
 init()
 add_pagination(app)
+
+
 
 @app.get("/memes", response_model=Page[MemePydantic], status_code=200)
 @app.get("/memes/limit-offset", response_model=LimitOffsetPage[MemePydantic])
 async def meme_list(db: Session = Depends(get_db)) -> any:
+    '''
+    Листинг мемов с пагинацией
+    '''
     return paginate(db, select(Meme).order_by(Meme.id))
 
 @app.get("/memes/{id}", 
@@ -32,6 +38,10 @@ async def meme_by_id(id : int ,
                      db : Session = Depends(get_db),
                      s3_client = Depends(get_s3_client),
                      bucket = Depends(get_bucket)):
+    """
+    Получить мем по id
+    - **id**: id мема в базе данных
+    """
     try:
         meme = db.query(Meme).where(Meme.id == id).first()
         if meme:
@@ -55,6 +65,11 @@ async def meme_add(file: UploadFile,
                    db: Session = Depends(get_db),
                    s3_client = Depends(get_s3_client),
                    bucket = Depends(get_bucket)):
+    """
+    Создать новый мем
+    - **file**: изображение мема
+    - **text**: текст мема
+    """
     try:
         result = upload_file(file, s3_client, bucket)
         if result:
@@ -80,6 +95,12 @@ async def meme_update_by_id(id : int,
                             db: Session = Depends(get_db),
                             s3_client = Depends(get_s3_client),
                             bucket = Depends(get_bucket)):
+    """
+    Обновить мем по id
+    - **id**: id мема в базе данных
+    - **new_file**: новое изображение мема
+    - **text**: новый текст мема
+    """
     try:
         meme = db.query(Meme).where(Meme.id == id).first()
         if meme:
@@ -108,6 +129,10 @@ async def meme_delete_by_id(id : int,
                             db: Session = Depends(get_db),
                             s3_client = Depends(get_s3_client),
                             bucket = Depends(get_bucket)):
+    """
+    Удалить мем по id
+    - **id**: id мема в базе данных
+    """
     try:
         meme = db.query(Meme).where(Meme.id == id).first()
         if meme:
