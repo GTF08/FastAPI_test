@@ -6795,3 +6795,4 @@ __pycache__/testdatabase.cpython-312.pyc
 .venv/Scripts/watchfiles.exe
 .venv/Scripts/__pycache__/jp.cpython-312.pyc
 **/__pycache__/
+sql_app.db
