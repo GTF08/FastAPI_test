@@ -1,0 +1,8 @@
+services:
+  fastapi:
+    container_name: fastapi
+    build:
+      dockerfile: /fastAPIDockerFile
+      context: .
+    ports:
+      - 8000:8000
